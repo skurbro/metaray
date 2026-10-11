@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>METARAY — photo &amp; video metadata editor</title>
+  <meta name="description" content="Edit photo and video metadata in your browser: pick the location on a 3D map, the phone model, date and camera settings. Files never leave your device." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 22'%3E%3Cpath d='M1 1h32v20H1z' fill='%230f1113' stroke='%232ce6d4' stroke-width='2'/%3E%3Cpath d='M8 6h18v4H12v2h14v4H8z' fill='%232ce6d4'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" integrity="sha384-MinO0mNliZ3vwppuPOUnGa+iq619pfMhLVUXfC4LHwSCvF9H+6P/KO4Q7qBOYV5V" crossorigin="anonymous" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "@uswriting/exiftool": "https://cdn.jsdelivr.net/npm/@uswriting/exiftool@1.0.9/dist/esm/index.js",
+        "@6over3/zeroperl-ts": "https://cdn.jsdelivr.net/npm/@6over3/zeroperl-ts@1.0.10/dist/esm/index.js",
+        "fflate": "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js"
+      },
+      "integrity": {
+        "https://cdn.jsdelivr.net/npm/@uswriting/exiftool@1.0.9/dist/esm/index.js": "sha384-6NgBVyWrLNjqaBIfnGTLEtqwkPwJefUNpWtBiXRSkmqGHSxI98vyF+fxZcaMCIUW",
+        "https://cdn.jsdelivr.net/npm/@6over3/zeroperl-ts@1.0.10/dist/esm/index.js": "sha384-KpIyOsabkHny5bqwyTDAVbrdBHx9n4gpcW37ruDJrycCgN/EukTosEwxnzPDc5Gv",
+        "https://cdn.jsdelivr.net/npm/fflate@0.8.2/esm/browser.js": "sha384-SNKgXdor2lJGkzPBg9ywUthk1cf7jcEOGewjMgbgasovEnR+wHQyNIf318oz4E/E"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="frame">
+    <div id="map"></div>
+    <div class="shade"></div>
+
+    <header class="top">
+      <div class="logo">
+        <svg viewBox="0 0 34 22" aria-hidden="true"><path d="M1 1h32v20H1z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 6h18v4H12v2h14v4H8z" fill="currentColor"/></svg>
+        <b>METARAY</b><span lang="zh">元数据</span>
+      </div>
+      <nav class="tabs" id="tabs">
+        <button data-tab="media" class="on">Media</button>
+        <button data-tab="geo">Location</button>
+        <button data-tab="device">Device</button>
+        <button data-tab="export">Export</button>
+      </nav>
+      <div class="coords" id="coords"></div>
+      <div class="engine" id="engine" title="ExifTool runs locally in your browser via WebAssembly"><i></i><span>ExifTool</span></div>
+    </header>
+
+    <aside class="side">
+      <div class="meta-line">
+        <div class="ml-date" id="mlDate">—</div>
+        <div class="ml-sub"><span class="wx" id="mlIcon"></span><span id="mlSub">click the map to pick a location</span></div>
+      </div>
+
+      <!-- MEDIA -->
+      <section class="pane on" data-pane="media">
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-v" id="kFiles">0</div><div class="kpi-l">files loaded</div></div>
+          <div class="kpi"><div class="kpi-v" id="kGps">0%</div><div class="kpi-l">currently geotagged</div></div>
+        </div>
+        <label class="drop" id="drop">
+          <input type="file" id="fileInput" multiple accept="image/*,video/*,.heic,.heif,.dng,.mov,.mp4" />
+          <span class="drop-plus">＋</span>
+          <span>Drop photos or videos here<br /><em>JPG · HEIC · PNG · DNG · MOV · MP4</em></span>
+        </label>
+        <div class="h-row"><h3>Files</h3><button class="link" id="selAll">select all</button></div>
+        <ul class="files" id="files"></ul>
+      </section>
+
+      <!-- LOCATION -->
+      <section class="pane" data-pane="geo">
+        <div class="search">
+          <input id="q" placeholder="City, district, address…" autocomplete="off" />
+          <ul class="results" id="results"></ul>
+        </div>
+        <h3>City</h3>
+        <div class="chips" id="cities"></div>
+        <h3 id="distTitle" hidden>District</h3>
+        <div class="chips" id="districts"></div>
+
+        <div class="grid2">
+          <label class="fld"><span>Latitude</span><input id="lat" class="mono" /></label>
+          <label class="fld"><span>Longitude</span><input id="lon" class="mono" /></label>
+          <label class="fld"><span>Altitude, m</span><input id="alt" class="mono" /></label>
+          <label class="fld"><span>Accuracy, m</span><input id="acc" class="mono" value="14.1" /></label>
+        </div>
+        <div class="row-opt">
+          <label class="sw"><input type="checkbox" id="randomPick" /><i></i>Random point in district</label>
+          <label class="fld inline"><input id="radius" class="mono" value="600" /><span>m</span></label>
+        </div>
+        <div class="row-opt">
+          <label class="sw"><input type="checkbox" id="jitterOn" /><i></i>Scatter per file</label>
+          <label class="fld inline"><input id="jitter" class="mono" value="25" /><span>m</span></label>
+        </div>
+        <div class="place">
+          <div class="place-l">Address</div>
+          <div class="place-v" id="placeText">—</div>
+        </div>
+      </section>
+
+      <!-- DEVICE -->
+      <section class="pane" data-pane="device">
+        <div class="chips" id="brands"></div>
+        <input id="devQ" class="plain" placeholder="Search models…" />
+        <h3>Model</h3>
+        <ul class="rank" id="devices"></ul>
+      </section>
+
+      <!-- EXPORT -->
+      <section class="pane" data-pane="export">
+        <h3>Completeness</h3>
+        <div class="dist" id="dist"></div>
+        <h3>Options</h3>
+        <label class="sw"><input type="checkbox" id="stripAll" /><i></i>Wipe all existing metadata first</label>
+        <label class="sw"><input type="checkbox" id="writePlace" /><i></i>Write place names (XMP/IPTC)</label>
+        <div class="row-opt">
+          <label class="sw"><input type="checkbox" id="rename" checked /><i></i>Rename like the device does</label>
+          <button class="link" id="reroll" title="New random counter and timing">⟳ shuffle</button>
+        </div>
+        <label class="sw"><input type="checkbox" id="stagger" checked /><i></i>Space out capture times in a batch</label>
+        <div class="grid2 mt">
+          <label class="fld"><span>Artist</span><input id="artist" /></label>
+          <label class="fld"><span>Copyright</span><input id="copyright" /></label>
+        </div>
+        <label class="fld mt"><span>Description</span><input id="description" /></label>
+        <button class="cta" id="apply"><span>Write metadata</span><em id="applyCount">0 files</em></button>
+        <button class="link" id="dlAll" hidden>download all as .zip</button>
+        <ul class="log" id="log"></ul>
+        <div class="hint" id="whereFrom" hidden>
+          macOS tags every browser download with a <b>“Where from”</b> note. It lives in Finder, not inside the file,
+          and doesn't travel with uploads. To clear it, run in Terminal:
+          <code id="xattrCmd"></code>
+          <button class="link" id="copyCmd">copy command</button>
+        </div>
+      </section>
+    </aside>
+
+    <div class="gauge" title="How much of the metadata set is filled in">
+      <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" class="g-bg"/><circle cx="50" cy="50" r="44" class="g-fg" id="gArc"/></svg>
+      <div class="g-t"><b id="gVal">0%</b><span>ready</span></div>
+    </div>
+
+    <!-- right panel: the file you are editing + what will change -->
+    <aside class="inspector">
+      <div class="ins-h">Selected file</div>
+      <div class="ins-prev" id="prev"></div>
+      <div class="ins-name" id="prevName"></div>
+      <div class="ins-block">
+        <div class="ins-h">Device</div>
+        <div class="dev-big" id="devBig"></div>
+        <div class="cams" id="cams"></div>
+        <label class="fld"><span id="swLabel">Software</span><input id="software" list="swList" class="mono" /><datalist id="swList"></datalist></label>
+      </div>
+      <div class="ins-block">
+        <div class="ins-h">Exposure <button class="link" id="rollExp">⟳ generate</button></div>
+        <div class="grid3">
+          <label class="fld"><span>f/</span><input id="fNumber" class="mono" /></label>
+          <label class="fld"><span>Shutter</span><input id="exposure" class="mono" placeholder="1/120" /></label>
+          <label class="fld"><span>ISO</span><input id="iso" class="mono" /></label>
+        </div>
+      </div>
+      <div class="ins-block">
+        <div class="ins-h">Before → after</div>
+        <table class="diff" id="diff"></table>
+      </div>
+    </aside>
+
+    <footer class="timeline">
+      <button class="tl-nav" id="tlPrev" aria-label="Earlier">‹</button>
+      <div class="tl-track" id="tl"></div>
+      <button class="tl-nav" id="tlNext" aria-label="Later">›</button>
+      <div class="tl-time">
+        <input type="date" id="dateIn" class="mono" />
+        <input type="time" id="timeIn" step="1" class="mono" />
+        <span class="tz mono" id="tz">UTC</span>
+      </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js" integrity="sha384-SYKAG6cglRMN0RVvhNeBY0r3FYKNOJtznwA0v7B5Vp9tr31xAHsZC0DqkQ/pZDmj" crossorigin="anonymous"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "metaray",
+  "version": "1.0.0",
+  "description": "Browser-based photo and video metadata editor with an interactive 3D map. Runs fully client-side.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "npx --yes serve@14.2.4 public -l 4317"
+  }
+}

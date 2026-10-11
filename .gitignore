@@ -1,0 +1,29 @@
+# dependencies
+node_modules/
+
+# personal sample media and metadata dumps
+*.metadata.json
+full_metadata.txt
+*.jpg
+*.jpeg
+*.heic
+*.heif
+*.png
+*.dng
+*.mov
+*.mp4
+# but keep images used by the docs
+!docs/**
+
+# AI assistant / editor files
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+.cursor/
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
