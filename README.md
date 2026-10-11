@@ -118,4 +118,5 @@ public/
 - Lens values for the iPhone 17 series and most Android phones are approximations. Edit `public/js/devices.js` to match a real file from your device.
 - Search and reverse geocoding use free community services with fair-use limits; please don't automate bulk requests.
 - macOS adds a "Where from" note (`com.apple.metadata:kMDItemWhereFroms`) to every file a browser downloads. It is a Finder attribute, not part of the file's metadata, and is not sent along when the file is uploaded. Clear it with `xattr -d com.apple.metadata:kMDItemWhereFroms <file>`; the app shows a ready-to-copy command after downloading.
+- The hosted version uses [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/) to count page views: no cookies, no personal data, and nothing about the files you edit. Remove the `cloudflareinsights` script from `public/index.html` if you self-host and don't want it.
 - Map data © OpenStreetMap contributors.
