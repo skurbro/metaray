@@ -2,7 +2,6 @@
 import { DEVICES, BRANDS, CAM_LABEL } from './devices.js';
 import { PLACES } from './places.js';
 import { buildTags, summarize, kindOf, jitterPoint } from './tags.js';
-import { readMeta, writeFile, onEngine } from './exif.js';
 import * as geo from './geo.js';
 import { deviceFileName, addSeconds, randomCounter } from './names.js';
 
@@ -61,11 +60,15 @@ function toast(msg, err) {
 }
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
-onEngine((state) => {
+// The ExifTool engine (~100 KB of JS plus a 25 MB wasm) is only loaded once the first file is added,
+// so it never delays the first paint or the map.
+function renderEngine(state) {
   const el = $('#engine');
   el.className = `engine ${state}`;
   el.querySelector('span').textContent = state === 'loading' ? 'Loading ExifTool…' : state === 'ready' ? 'ExifTool ready' : 'ExifTool';
-});
+}
+let exifModule;
+const exif = () => (exifModule ??= import('./exif.js').then((m) => { m.onEngine(renderEngine); return m; }));
 
 // ---------- tabs ----------
 $('#tabs').addEventListener('click', (e) => {
@@ -483,7 +486,7 @@ async function addFiles(list) {
     renderFiles(); renderPreview();
     toast(`Reading ${file.name}…`);
     try {
-      entry.meta = await readMeta(file);
+      entry.meta = await (await exif()).readMeta(file);
       entry.summary = summarize(entry.meta);
       ok++;
     } catch (e) {
@@ -740,12 +743,12 @@ $('#apply').onclick = async () => {
       const p = { ...base, date: pl?.date ?? base.date, direction: +rand(0, 359.99).toFixed(4) };
       if (p.jitter && Number.isFinite(p.lat)) [p.lat, p.lon] = jitterPoint(p.lat, p.lon, p.jitter);
       const tags = buildTags(f.kind, p, p.stripAll ? {} : f.meta);
-      const written = await writeFile(f.file, tags, { stripAll: p.stripAll });
+      const written = await (await exif()).writeFile(f.file, tags, { stripAll: p.stripAll });
       const out = new File([written], pl?.name || f.name, { type: written.type, lastModified: written.lastModified });
       if (f.outUrl) URL.revokeObjectURL(f.outUrl);
       f.out = out;
       f.outUrl = URL.createObjectURL(out);
-      f.summary = summarize(await readMeta(out));
+      f.summary = summarize(await (await exif()).readMeta(out));
       ok++;
       const label = out.name === f.name ? esc(f.name) : `${esc(f.name)} → ${esc(out.name)}`;
       log.push(`<li><span>✓ ${label} · ${Object.keys(tags).length} tags</span><button class="link" data-dl="${f.id}">download</button></li>`);
