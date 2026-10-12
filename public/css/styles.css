@@ -73,7 +73,6 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
   content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--teal);
   transform: scaleX(0); transform-origin: left; transition: transform .25s cubic-bezier(.2,.8,.2,1);
 }
-.tabs button:hover { color: var(--teal); }
 .tabs button.on { color: var(--teal); }
 .tabs button.on::after { transform: scaleX(1); }
 .coords { margin-left: auto; color: var(--text-3); font-family: var(--mono); font-size: 11px; white-space: pre; }
@@ -107,7 +106,6 @@ button { cursor: pointer; background: none; border: 0; padding: 0; }
 h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px; }
 .h-row { display: flex; align-items: baseline; justify-content: space-between; }
 .link { color: var(--teal-dim); font-size: 11px; }
-.link:hover { color: var(--teal); }
 
 .kpis { display: grid; gap: 14px; margin-bottom: 18px; }
 .kpi-v { font-size: 24px; font-weight: 600; color: var(--teal); letter-spacing: -.01em; line-height: 1.1; }
@@ -120,14 +118,13 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 .drop em { font-style: normal; color: var(--text-3); font-size: 11px; }
 .drop input { display: none; }
 .drop-plus { width: 34px; height: 34px; flex: none; border-radius: 50%; display: grid; place-items: center; border: 1px solid var(--teal-dim); color: var(--teal); font-size: 18px; }
-.drop:hover, .drop.over { border-color: var(--teal); background: rgba(44,230,212,.05); }
+.drop.over { border-color: var(--teal); background: rgba(44,230,212,.05); }
 
 .files { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .file {
   display: grid; grid-template-columns: 16px 40px 1fr auto; gap: 10px; align-items: center;
   padding: 6px 6px; border-radius: 8px; cursor: pointer; transition: background .15s;
 }
-.file:hover { background: rgba(255,255,255,.04); }
 .file.focus { background: rgba(44,230,212,.08); box-shadow: inset 2px 0 0 var(--teal); }
 .file .ck { width: 14px; height: 14px; border: 1px solid var(--line-2); border-radius: 3px; display: grid; place-items: center; }
 .file.sel .ck { background: var(--teal); border-color: var(--teal); }
@@ -141,7 +138,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 .file .st.gps { background: var(--orange); }
 .file .st.done { background: var(--teal); box-shadow: 0 0 8px var(--teal); }
 .file .x { opacity: 0; color: var(--text-3); font-size: 14px; }
-.file:hover .x { opacity: 1; }
 .empty { color: var(--text-3); font-size: 12px; padding: 8px 0; }
 
 /* search and chips */
@@ -158,7 +154,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 }
 .results:empty { display: none; }
 .results li { padding: 8px 10px; border-radius: 6px; cursor: pointer; }
-.results li:hover { background: rgba(44,230,212,.08); }
 .results li b { display: block; font-weight: 500; }
 .results li span { font-size: 11px; color: var(--text-3); }
 
@@ -167,7 +162,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
   padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--text-2); font-size: 12px;
   transition: all .15s;
 }
-.chip:hover { border-color: var(--line-2); color: var(--text); }
 .chip.on { border-color: var(--teal); color: var(--teal); background: rgba(44,230,212,.07); }
 
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
@@ -204,7 +198,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 .rank .r-y { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
 .rank .r-bar { height: 5px; border-radius: 3px; background: var(--track); margin-top: 5px; overflow: hidden; }
 .rank .r-bar i { display: block; height: 100%; background: var(--teal); border-radius: 3px; opacity: .55; transition: opacity .2s; }
-.rank li:hover .r-bar i { opacity: .85; }
 .rank li.on .r-n { color: var(--teal); }
 .rank li.on .r-bar i { opacity: 1; box-shadow: 0 0 10px var(--teal-glow); }
 
@@ -221,7 +214,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
   box-shadow: 0 0 0 0 var(--teal-glow); transition: box-shadow .25s, transform .1s, opacity .2s;
 }
 .cta em { font-style: normal; font-weight: 500; opacity: .7; font-size: 12px; }
-.cta:hover { box-shadow: 0 0 24px var(--teal-glow); }
 .cta:active { transform: scale(.985); }
 .cta:disabled { opacity: .35; pointer-events: none; }
 .cta + .link { margin-top: 10px; align-self: flex-start; }
@@ -251,7 +243,6 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 .inspector::-webkit-scrollbar-thumb { background: var(--track); }
 .ins-prev { height: 150px; margin-top: -2px; border-radius: 8px; background: #16191c; overflow: hidden; display: grid; place-items: center; color: var(--text-3); font-size: 11px; }
 .ins-prev.empty { height: auto; display: block; padding: 14px; text-align: left; color: var(--text-2); font-size: 12px; cursor: pointer; border: 1px dashed var(--line-2); background: transparent; }
-.ins-prev.empty:hover { border-color: var(--teal-dim); }
 .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; counter-reset: s; }
 .steps li { counter-increment: s; display: grid; grid-template-columns: 20px 1fr; gap: 8px; align-items: start; }
 .steps li::before { content: counter(s); width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--teal-dim); color: var(--teal); font-size: 10px; display: grid; place-items: center; }
@@ -280,14 +271,11 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
   display: flex; align-items: center; gap: 10px;
 }
 .tl-nav { width: 22px; height: 22px; color: var(--text-2); font-size: 18px; line-height: 1; }
-.tl-nav:hover { color: var(--teal); }
 .tl-track { position: relative; flex: 1; height: 100%; display: flex; justify-content: space-between; align-items: flex-end; }
 .tl-track::before { content: ''; position: absolute; left: 0; right: 0; bottom: 26px; height: 1px; background: var(--line-2); }
 .tl-day { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 9px; color: var(--text-2); font-size: 11px; padding-bottom: 2px; }
 .tl-day i { width: 7px; height: 7px; border-radius: 50%; background: var(--teal-dim); position: relative; z-index: 1; transition: transform .2s; }
 .tl-day.wk i { background: var(--orange); }
-.tl-day:hover i { transform: scale(1.5); }
-.tl-day:hover { color: var(--text); }
 .tl-day.on { color: var(--teal); }
 .tl-day.on i { background: var(--teal); box-shadow: 0 0 10px var(--teal); }
 .tl-day.on::before {
@@ -351,3 +339,101 @@ h3 { font-size: 12px; font-weight: 500; color: var(--text); margin: 20px 0 10px;
 .ctrl-hint.show { opacity: 1; transform: none; }
 .ctrl-hint b { color: var(--teal); font-weight: 500; display: inline-block; min-width: 22px; }
 .ctrl-hint .sub { color: var(--text-3); padding-left: 22px; }
+
+/* Hover only where a real pointer can hover; on touch a tap would leave these stuck on. */
+@media (hover: hover) and (pointer: fine) {
+  .tabs button:hover { color: var(--teal); }
+  .link:hover { color: var(--teal); }
+  .drop:hover { border-color: var(--teal); background: rgba(44,230,212,.05); }
+  .file:hover { background: rgba(255,255,255,.04); }
+  .file:hover .x { opacity: 1; }
+  .results li:hover { background: rgba(44,230,212,.08); }
+  .chip:hover { border-color: var(--line-2); color: var(--text); }
+  .rank li:hover .r-bar i { opacity: .85; }
+  .cta:hover { box-shadow: 0 0 24px var(--teal-glow); }
+  .ins-prev.empty:hover { border-color: var(--teal-dim); }
+  .tl-nav:hover { color: var(--teal); }
+  .tl-day:hover i { transform: scale(1.5); }
+  .tl-day:hover { color: var(--text); }
+}
+
+/* ---------- touch baseline ---------- */
+html { -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior: none; }
+button, .chip, .tl-day, .file, .rank li { touch-action: manipulation; -webkit-user-select: none; user-select: none; }
+.chip:active, .tl-day:active, .tabs button:active, .file:active, .rank li:active { opacity: .7; }
+.cta:active { transform: scale(.97); }
+.mobile-only { display: none; }
+.touch-only { display: none; }
+@media (pointer: coarse) { .touch-only { display: inline; } .desk-only { display: none; } }
+.grabber { display: none; }
+
+/* ---------- mobile: full-screen map, bottom tab bar, bottom sheet ---------- */
+@media (max-width: 760px) {
+  :root { --tabbar: calc(58px + env(safe-area-inset-bottom, 0px)); --side: 100%; }
+  body { padding: 0; }
+  .frame { height: 100dvh; border-radius: 0; box-shadow: none; }
+  .shade { background: linear-gradient(180deg, rgba(13,15,17,.9) 0, rgba(13,15,17,0) 90px); }
+
+  /* 16px inputs: iOS zooms the page into anything smaller */
+  input, select, textarea, .mono { font-size: 16px; }
+  .fld input { font-size: 16px; }
+
+  /* z-index above the sheet: the fixed tab bar lives inside .top's stacking context */
+  .top { height: auto; padding: calc(10px + env(safe-area-inset-top, 0px)) 16px 10px; gap: 12px; z-index: 30; }
+  .logo { width: auto; }
+  .coords { display: none; }
+
+  .tabs {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; gap: 0;
+    height: var(--tabbar); padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(12,14,16,.96); backdrop-filter: blur(12px); border-top: 1px solid var(--line);
+  }
+  .tabs button { flex: 1; font-size: 13px; padding: 0; }
+  .tabs button::after { left: 28%; right: 28%; bottom: auto; top: 0; }
+  .mobile-only { display: block; }
+
+  .side {
+    top: auto; bottom: var(--tabbar); left: 0; right: 0; width: auto; height: 56dvh; z-index: 10;
+    padding: 6px 16px 12px; background: rgba(15,17,19,.97); backdrop-filter: blur(12px);
+    border-top: 1px solid var(--line-2); border-radius: 16px 16px 0 0;
+    transition: transform .32s cubic-bezier(.2,.8,.2,1);
+  }
+  .side.collapsed { transform: translateY(calc(100% + var(--tabbar))); }
+  .grabber { display: block; flex: none; width: 100%; height: 22px; position: relative; }
+  .grabber::after { content: ''; position: absolute; left: 50%; top: 7px; width: 38px; height: 4px; margin-left: -19px; border-radius: 4px; background: var(--line-2); }
+  .meta-line { margin-bottom: 12px; }
+  .kpis { grid-template-columns: 1fr 1fr; margin-bottom: 14px; }
+  .pane::-webkit-scrollbar { display: none; }
+  .pane { overscroll-behavior: contain; margin-right: 0; padding-right: 0; scrollbar-gutter: auto; }
+  .pane.on { animation: none; }
+
+  .gauge { left: auto; right: 14px; top: calc(56px + env(safe-area-inset-top, 0px)); width: 62px; height: 62px; }
+  .g-t b { font-size: 14px; }
+  .g-t span { font-size: 8px; }
+
+  /* The right panel is split up and moved into the tabs by app.js; hide its empty shell. */
+  .inspector { display: none; }
+  #insFile { margin-top: 18px; }
+  .pane .ins-block { border-top: 0; margin-top: 0; padding-top: 0; margin-bottom: 16px; }
+  #insDevice { padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+  .pane .ins-prev { height: 180px; }
+
+  /* Timeline lives inside the Date tab */
+  .pane .timeline { position: static; height: auto; flex-direction: column; align-items: stretch; gap: 16px; padding-top: 8px; }
+  .pane .tl-track { display: grid; grid-template-columns: repeat(5, 1fr); row-gap: 14px; height: auto; }
+  .pane .tl-track::before { display: none; }
+  .pane .tl-day { padding: 8px 0; }
+  .pane .tl-day.on::before { display: none; }
+  .pane .tl-day.on { background: rgba(44,230,212,.08); border-radius: 8px; }
+  .pane .timeline > .tl-nav { display: none; }
+  .pane .tl-time { border-left: 0; padding-left: 0; flex-wrap: wrap; }
+  .pane .tl-time input { flex: 1; min-width: 0; padding: 10px; }
+
+  .file .x { opacity: .6; font-size: 18px; padding: 4px 6px; }
+  .chip { padding: 7px 12px; }
+  .row-opt .fld.inline { width: 84px; }
+  .toast { top: calc(64px + env(safe-area-inset-top, 0px)); max-width: calc(100% - 32px); }
+  .maplibregl-ctrl-bottom-right { bottom: var(--tabbar); }
+  .maplibregl-ctrl-group { display: none; } /* pinch, twist and two-finger drag cover zoom/rotate/tilt */
+  .ctrl-hint { display: none; }
+}

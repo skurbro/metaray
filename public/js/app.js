@@ -73,12 +73,63 @@ const exif = () => (exifModule ??= import('./exif.js').then((m) => { m.onEngine(
 // ---------- tabs ----------
 $('#tabs').addEventListener('click', (e) => {
   const b = e.target.closest('button[data-tab]');
-  if (b) setTab(b.dataset.tab);
+  if (!b) return;
+  // On mobile, tapping the active tab again tucks the sheet away to free up the map.
+  if (isMobile() && b.classList.contains('on') && !sheetCollapsed()) { setSheet(false); return; }
+  setTab(b.dataset.tab);
+  setSheet(true);
 });
 function setTab(name) {
   $$('#tabs button').forEach((x) => x.classList.toggle('on', x.dataset.tab === name));
   $$('.pane').forEach((p) => p.classList.toggle('on', p.dataset.pane === name));
   if (name === 'export') renderDist();
+}
+
+// ---------- mobile layout ----------
+// Below 760px the left column becomes a bottom sheet and the tabs move to a bottom bar.
+// The right-panel blocks and the timeline are moved into the tabs they belong to,
+// and put back in place when the screen gets wide again (listeners stay attached).
+const mobileMq = matchMedia('(max-width: 760px)');
+const isMobile = () => mobileMq.matches;
+const sheetCollapsed = () => $('.side').classList.contains('collapsed');
+function setSheet(open) {
+  $('.side').classList.toggle('collapsed', !open);
+  syncMapPadding();
+}
+$('#grabber').addEventListener('click', () => setSheet(sheetCollapsed()));
+
+const MOVES = [
+  ['#insDevice', '[data-pane="device"]', 'prepend'],
+  ['#insExposure', '#insDevice', 'after'],
+  ['#insFile', '[data-pane="media"]', 'append'],
+  ['#insDiff', '[data-pane="export"]', 'prepend'],
+  ['#timeline', '[data-pane="date"]', 'append'],
+];
+const homes = new Map(); // moved element -> comment node marking its desktop spot
+function applyLayout() {
+  for (const [sel, target, how] of MOVES) {
+    const el = $(sel);
+    if (isMobile()) {
+      if (!homes.has(el)) { const mark = document.createComment(sel); el.before(mark); homes.set(el, mark); }
+      $(target)[how](el);
+    } else if (homes.has(el)) {
+      homes.get(el).replaceWith(el);
+      homes.delete(el);
+    }
+  }
+  if (!isMobile()) {
+    $('.side').classList.remove('collapsed');
+    if ($('[data-tab="date"]').classList.contains('on')) setTab('media');
+  }
+  syncMapPadding();
+}
+mobileMq.addEventListener('change', () => { applyLayout(); renderDevice(); });
+
+// Keep the map's visual center above the sheet, so flyTo targets land in the visible part.
+function syncMapPadding() {
+  const frame = $('.frame').getBoundingClientRect();
+  const covered = isMobile() ? Math.max(0, frame.bottom - $(sheetCollapsed() ? '#tabs' : '.side').getBoundingClientRect().top) : 0;
+  map.setPadding({ top: 0, left: 0, right: 0, bottom: covered });
 }
 
 // ---------- map ----------
@@ -436,7 +487,7 @@ function selectDevice(d) {
 function renderDevice() {
   const d = S.device;
   if (!d) {
-    $('#devBig').innerHTML = '<span class="muted">Pick a phone in the Device tab</span>';
+    $('#devBig').innerHTML = `<span class="muted">${isMobile() ? 'Pick a phone from the list below' : 'Pick a phone in the Device tab'}</span>`;
     $('#cams').innerHTML = '';
     return;
   }
@@ -801,4 +852,7 @@ $('#dlAll').onclick = async () => {
 };
 
 // ---------- start ----------
+applyLayout();
+new ResizeObserver(() => syncMapPadding()).observe($('.side'));
+$('.side').addEventListener('transitionend', syncMapPadding);
 renderCities(); renderBrands(); renderDevices(); renderDevice(); renderTimeline(); renderFiles(); renderPreview(); renderAll();

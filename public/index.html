@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <meta name="theme-color" content="#050607" />
+  <meta name="color-scheme" content="dark" />
   <title>METARAY — photo &amp; video metadata editor</title>
   <meta name="description" content="Edit photo and video metadata in your browser: pick the location on a 3D map, the phone model, date and camera settings. Files never leave your device." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 22'%3E%3Cpath d='M1 1h32v20H1z' fill='%230f1113' stroke='%232ce6d4' stroke-width='2'/%3E%3Cpath d='M8 6h18v4H12v2h14v4H8z' fill='%232ce6d4'/%3E%3C/svg%3E" />
@@ -54,6 +56,7 @@
         <button data-tab="media" class="on">Media</button>
         <button data-tab="geo">Location</button>
         <button data-tab="device">Device</button>
+        <button data-tab="date" class="mobile-only">Date</button>
         <button data-tab="export">Export</button>
       </nav>
       <div class="coords" id="coords"></div>
@@ -61,6 +64,7 @@
     </header>
 
     <aside class="side">
+      <button class="grabber" id="grabber" aria-label="Collapse panel"></button>
       <div class="meta-line">
         <div class="ml-date" id="mlDate">—</div>
         <div class="ml-sub"><span class="wx" id="mlIcon"></span><span id="mlSub">click the map to pick a location</span></div>
@@ -75,7 +79,7 @@
         <label class="drop" id="drop">
           <input type="file" id="fileInput" multiple accept="image/*,video/*,.heic,.heif,.dng,.mov,.mp4" />
           <span class="drop-plus">＋</span>
-          <span>Drop photos or videos here<br /><em>JPG · HEIC · PNG · DNG · MOV · MP4</em></span>
+          <span><span class="desk-only">Drop photos or videos here</span><span class="touch-only">Tap to add photos or videos</span><br /><em>JPG · HEIC · PNG · DNG · MOV · MP4</em></span>
         </label>
         <div class="h-row"><h3>Files</h3><button class="link" id="selAll">select all</button></div>
         <ul class="files" id="files"></ul>
@@ -121,6 +125,9 @@
       </section>
 
       <!-- EXPORT -->
+      <!-- mobile only: the timeline is moved in here -->
+      <section class="pane" data-pane="date"></section>
+
       <section class="pane" data-pane="export">
         <h3>Completeness</h3>
         <div class="dist" id="dist"></div>
@@ -156,16 +163,18 @@
 
     <!-- right panel: the file you are editing + what will change -->
     <aside class="inspector">
+      <div id="insFile">
       <div class="ins-h">Selected file</div>
       <div class="ins-prev" id="prev"></div>
       <div class="ins-name" id="prevName"></div>
-      <div class="ins-block">
+      </div>
+      <div class="ins-block" id="insDevice">
         <div class="ins-h">Device</div>
         <div class="dev-big" id="devBig"></div>
         <div class="cams" id="cams"></div>
         <label class="fld"><span id="swLabel">Software</span><input id="software" list="swList" class="mono" /><datalist id="swList"></datalist></label>
       </div>
-      <div class="ins-block">
+      <div class="ins-block" id="insExposure">
         <div class="ins-h">Exposure <button class="link" id="rollExp">⟳ generate</button></div>
         <div class="grid3">
           <label class="fld"><span>f/</span><input id="fNumber" class="mono" /></label>
@@ -173,13 +182,13 @@
           <label class="fld"><span>ISO</span><input id="iso" class="mono" /></label>
         </div>
       </div>
-      <div class="ins-block">
+      <div class="ins-block" id="insDiff">
         <div class="ins-h">Before → after</div>
         <table class="diff" id="diff"></table>
       </div>
     </aside>
 
-    <footer class="timeline">
+    <footer class="timeline" id="timeline">
       <button class="tl-nav" id="tlPrev" aria-label="Earlier">‹</button>
       <div class="tl-track" id="tl"></div>
       <button class="tl-nav" id="tlNext" aria-label="Later">›</button>
